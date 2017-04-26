@@ -54,11 +54,11 @@ public class SplashActivity extends AppCompatActivity {
                     enterHome();
                     break;
                 case URL_ERROR:
-                    Toast.makeText(getApplicationContext(), "检查更新失败!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SplashActivity.this, "检查更新失败!", Toast.LENGTH_SHORT).show();
                     enterHome();
                     break;
                 case IO_ERROR:
-                    Toast.makeText(getApplicationContext(), "读取异常!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SplashActivity.this, "读取异常!", Toast.LENGTH_SHORT).show();
                     enterHome();
                     break;
                 case JSON_ERROR:
@@ -69,7 +69,7 @@ public class SplashActivity extends AppCompatActivity {
     };
 
     private void enterHome() {
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
@@ -80,7 +80,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-//        startActivity(new Intent(this, MainActivity.class));
         init();
     }
 
@@ -89,6 +88,33 @@ public class SplashActivity extends AppCompatActivity {
         versionName.setText("版本号: " + getVersionName());
         mLocalVersionCode = getVersionCode();
         checkVersion();
+    }
+
+    private int getVersionCode() {
+        PackageManager manager = getPackageManager();
+        try {
+            PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取版本名称
+     *
+     * @return 返回null为异常
+     */
+    private String getVersionName() {
+        PackageManager manager = getPackageManager();
+        try {
+            PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void checkVersion() {
@@ -140,38 +166,12 @@ public class SplashActivity extends AppCompatActivity {
         }).start();
     }
 
-    private int getVersionCode() {
-        PackageManager manager = getPackageManager();
-        try {
-            PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    /**
-     * 获取版本名称
-     *
-     * @return 返回null为异常
-     */
-    private String getVersionName() {
-        PackageManager manager = getPackageManager();
-        try {
-            PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
-            return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
     /**
      * 弹出对话框,提示用户更新
      */
     protected void showUpdateDialog() {
         //对话框,是依赖于activity存在的
-        AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //设置左上角图标
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setTitle("发现新版本");
@@ -179,11 +179,10 @@ public class SplashActivity extends AppCompatActivity {
         builder.setMessage(bean.getDesc());
         //积极按钮,立即更新
         builder.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //下载apk,apk链接地址,downloadUrl
-//                downloadApk();
+                downloadApk();
             }
         });
         builder.setNegativeButton("稍后再说", new DialogInterface.OnClickListener() {
@@ -195,6 +194,11 @@ public class SplashActivity extends AppCompatActivity {
         });
         builder.show();
     }
+
+    private void downloadApk() {
+
+    }
+
     private class Bean {
 
         /**
