@@ -1,10 +1,13 @@
 package cn.hzu.mobile.security.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
@@ -15,12 +18,16 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cn.hzu.mobile.security.MainActivity;
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.StreamUtil;
 
@@ -67,6 +74,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
     };
+    private ProgressDialog progressDialog;
 
     private void enterHome() {
         startActivity(new Intent(this, MainActivity.class));
@@ -192,11 +200,71 @@ public class SplashActivity extends AppCompatActivity {
                 enterHome();
             }
         });
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                enterHome();
+            }
+        });
         builder.show();
     }
 
     private void downloadApk() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            final String path = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator + "moblesafe.apk";
+            progressDialog = new ProgressDialog(this);
+            RequestParams requestParams = new RequestParams(bean.getDownloadUrl());
+            requestParams.setSaveFilePath(path);
+            x.http().get(requestParams, new Callback.ProgressCallback<File>() {
+                @Override
+                public void onWaiting() {
+                }
 
+                @Override
+                public void onStarted() {
+                }
+
+                @Override
+                public void onLoading(long total, long current, boolean isDownloading) {
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    progressDialog.setMessage("亲，努力下载中。。。");
+                    progressDialog.show();
+                    progressDialog.setMax((int) total);
+                    progressDialog.setProgress((int) current);
+                }
+
+                @Override
+                public void onSuccess(File result) {
+                    Toast.makeText(SplashActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    intent.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    ex.printStackTrace();
+                    Toast.makeText(SplashActivity.this, "下载失败，请检查网络和SD卡", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        }else {
+            Toast.makeText(SplashActivity.this, "下载失败，请检查网络和SD卡", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class Bean {
