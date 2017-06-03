@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">手机卫士</string>
+    <string name="pref_title_add_friends_to_messages">设置显示风格</string>
 </resources>

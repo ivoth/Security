@@ -1,8 +1,10 @@
 package cn.hzu.mobile.security.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,7 +32,6 @@ import java.net.URL;
 
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.StreamUtil;
-
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
@@ -95,7 +96,12 @@ public class SplashActivity extends AppCompatActivity {
         TextView versionName = (TextView) findViewById(R.id.tv_version);
         versionName.setText("版本号: " + getVersionName());
         mLocalVersionCode = getVersionCode();
-        checkVersion();
+        if (getSharedPreferences("Preference", Activity.MODE_PRIVATE).getBoolean("auto_update", true)) {
+            checkVersion();
+        } else {
+            enterHome();
+        }
+
     }
 
     private int getVersionCode() {
@@ -161,7 +167,7 @@ public class SplashActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     long endTime = System.currentTimeMillis();
-                    if(endTime - startTime < 4000) {
+                    if (endTime - startTime < 4000) {
                         try {
                             Thread.sleep(4000 - (endTime - startTime));
                         } catch (Exception e) {
@@ -262,7 +268,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 }
             });
-        }else {
+        } else {
             Toast.makeText(SplashActivity.this, "下载失败，请检查网络和SD卡", Toast.LENGTH_SHORT).show();
         }
     }
@@ -280,6 +286,7 @@ public class SplashActivity extends AppCompatActivity {
         private int versionCode;
         private String desc;
         private String downloadUrl;
+
         public String getVersionName() {
             return versionName;
         }

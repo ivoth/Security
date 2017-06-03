@@ -46,5 +46,4 @@
         android:summaryOff="程序锁已关闭"
         android:summaryOn="程序锁已打开"
         android:title="程序锁设置" />
-
 </PreferenceScreen>

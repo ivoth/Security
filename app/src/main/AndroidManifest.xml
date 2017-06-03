@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:name=".BaseApplication"
@@ -14,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SplashActivity"
+        <activity
+            android:name=".activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -24,6 +29,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.SetupOverActivity" />
+        <activity android:name=".activity.Setup1Activity" />
+        <activity android:name=".activity.Setup2Activity" />
+        <activity android:name=".activity.Setup3Activity" />
+        <activity android:name=".activity.Setup4Activity" />
+        <activity android:name=".activity.ContactListActivity" />
+
+        <receiver android:name=".receive.BootReceiver" >
+            <intent-filter >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
