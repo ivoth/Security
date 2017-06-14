@@ -35,7 +35,6 @@ public class QueryAddressActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query_address);
         initUI();
-//        AddressDao.getAddress(this, "15507845578");
     }
 
     private void initUI() {

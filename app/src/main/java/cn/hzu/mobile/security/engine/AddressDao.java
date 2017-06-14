@@ -38,16 +38,16 @@ public class AddressDao {
             case 11:
                 if (phone.matches("^1[3-8]\\d{9}$")) {
                     phone = phone.substring(0, 7);
-                    String sql = "SELECT cardtype  FROM address_tb WHERE _id IN (SELECT outkey FROM numinfo WHERE mobileprefix = ?);";
+                    String sql = "SELECT location  FROM data2 WHERE id IN (SELECT outkey FROM data1 WHERE id = ?);";
                     cursor = db.rawQuery(sql, new String[]{phone});
                 } else {
-                    String area = phone.substring(0, 3);
-                    cursor = db.query("address_tb", new String[]{"cardtype"}, "area = ?", new String[]{area}, null, null, null);
+                    String area = phone.substring(1, 3);
+                    cursor = db.query("data2", new String[]{"location"}, "area = ?", new String[]{area}, null, null, null);
                 }
                 break;
             case 12:
-                String area = phone.substring(0, 4);
-                cursor = db.query("address_tb", new String[]{"cardtype"}, "area = ?", new String[]{area}, null, null, null);
+                String area = phone.substring(1, 4);
+                cursor = db.query("data2", new String[]{"location"}, "area = ?", new String[]{area}, null, null, null);
                 break;
             default:
                 mAddress = "未知号码";

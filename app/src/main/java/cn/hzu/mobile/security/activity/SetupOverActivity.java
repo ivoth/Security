@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,8 +20,8 @@ public class SetupOverActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences preference = getSharedPreferences("Preference", Activity.MODE_PRIVATE);
-        boolean setupOver = preference.getBoolean(ConstantValue.SETUP_OVER, false);
+        SharedPreferences sp = getSharedPreferences(ConstantValue.CONFIG, Activity.MODE_PRIVATE);
+        boolean setupOver = sp.getBoolean(ConstantValue.SETUP_OVER, false);
 
         if (!setupOver) {
             Intent intent = new Intent(this, Setup1Activity.class);
@@ -34,7 +34,7 @@ public class SetupOverActivity extends AppCompatActivity {
 
     private void initUI() {
         mTvPhone = (TextView) findViewById(R.id.tv_phone);
-        SharedPreferences pf = getSharedPreferences("Preference", Context.MODE_PRIVATE);
+        SharedPreferences pf = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
         String phone = pf.getString(ConstantValue.CONTACT_PHONE, "");
         mTvPhone.setText(phone);
 

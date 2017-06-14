@@ -2,4 +2,10 @@
     <string name="app_name">手机卫士</string>
     <string name="pref_title_add_friends_to_messages">设置显示风格</string>
     <string name="device_admin_description">一键锁屏,一键删除数据</string>
+    <string name="check_sd_card">下载失败，请检查网络和SD卡</string>
+    <string name="update_immediately">立即更新</string>
+    <string name="later">稍后再说</string>
+    <string name="download_successful">下载成功</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确认</string>
 </resources>

@@ -15,7 +15,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class LocationService extends Service{
-    private static final String TAG = "LocationService";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -26,10 +25,9 @@ public class LocationService extends Service{
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         String bestProvider = lm.getBestProvider(criteria, true);
         lm.requestLocationUpdates(bestProvider, 0, 0, new MyLocationListener());
-        Log.i(TAG, "onCreate: ");
     }
 
-    class MyLocationListener implements LocationListener
+    private class MyLocationListener implements LocationListener
     {
         private static final String TAG = "MyLocationListener";
         @Override

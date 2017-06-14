@@ -49,7 +49,7 @@ public class Setup3Activity extends BaseSetupActivity {
 
     private void initUI() {
         mContext = this;
-        mPreference = getSharedPreferences("Preference", Context.MODE_PRIVATE);
+        mPreference = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
 
         mEtPhoneNumber = (EditText) findViewById(R.id.et_phone_number);
         mEtPhoneNumber.setText(mPreference.getString(ConstantValue.CONTACT_PHONE, ""));

@@ -15,7 +15,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String simSerialNumber = tm.getSimSerialNumber();
-        SharedPreferences pf = context.getSharedPreferences("Preference", Context.MODE_PRIVATE);
+        SharedPreferences pf = context.getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
         String simNumber = pf.getString(ConstantValue.SIM_NUMBER, "");
 
         if (!simNumber.equals(simSerialNumber)) {

@@ -26,7 +26,7 @@ public class Setup1Activity extends BaseSetupActivity {
     @Override
     protected void showNextPage() {
         startActivity(new Intent(this, Setup2Activity.class));
-        finish();
         overridePendingTransition(R.anim.next_in_anim, R.anim.next_out_anim);
+        finish();
     }
 }

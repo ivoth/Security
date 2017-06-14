@@ -47,22 +47,23 @@ public class Setup4Activity extends BaseSetupActivity {
     private void initUI() {
         mCheckBox = (CheckBox) findViewById(R.id.cb_box);
 
-        mPreference = getSharedPreferences("Preference", Context.MODE_PRIVATE);
+        mPreference = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
 
         openSecurity = mPreference.getBoolean(ConstantValue.OPEN_SECURITY, false);
         mCheckBox.setChecked(openSecurity);
-        String text = openSecurity ? "你已开启防盗模块" : "您未开启防盗模块";
-        mCheckBox.setText(text);
+        setText();
 
         mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openSecurity = mCheckBox.isChecked();
-                String text = openSecurity ? "你已开启防盗模块" : "您未开启防盗模块";
-                mCheckBox.setText(text);
+                setText();
                 mPreference.edit().putBoolean(ConstantValue.OPEN_SECURITY, openSecurity).apply();
             }
         });
     }
-
+    private void setText() {
+        String text = openSecurity ? "你已开启防盗模块" : "您未开启防盗模块";
+        mCheckBox.setText(text);
+    }
 }

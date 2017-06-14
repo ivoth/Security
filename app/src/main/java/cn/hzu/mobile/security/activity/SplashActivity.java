@@ -1,7 +1,7 @@
 package cn.hzu.mobile.security.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import cn.hzu.mobile.security.R;
+import cn.hzu.mobile.security.utils.ConstantValue;
 import cn.hzu.mobile.security.utils.StreamUtil;
 
 public class SplashActivity extends AppCompatActivity {
@@ -51,7 +52,8 @@ public class SplashActivity extends AppCompatActivity {
     protected static final int URL_ERROR = 102;
     //以下是其他各种出错状态码
     protected static final int IO_ERROR = 103;
-    protected static final int JSON_ERROR = 104;
+    private Bean bean;
+    private int mLocalVersionCode;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -70,21 +72,9 @@ public class SplashActivity extends AppCompatActivity {
                     Toast.makeText(SplashActivity.this, "读取异常!", Toast.LENGTH_SHORT).show();
                     enterHome();
                     break;
-                case JSON_ERROR:
-
-                    break;
             }
         }
     };
-    private ProgressDialog progressDialog;
-
-    private void enterHome() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
-    }
-
-    private Bean bean;
-    private int mLocalVersionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +89,14 @@ public class SplashActivity extends AppCompatActivity {
         initAddressDB("address.db");
     }
 
+    /**
+     * 从assets拷贝文件到用户目录
+     * @param dbName
+     */
     private void initAddressDB(String dbName) {
         File filesDir = getFilesDir();
         File file = new File(filesDir, dbName);
+        //文件存在就不在拷贝
         if (file.exists()) {
             return;
         }
@@ -128,20 +123,25 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     private void init() {
         TextView versionName = (TextView) findViewById(R.id.tv_version);
         versionName.setText("版本号: " + getVersionName());
         mLocalVersionCode = getVersionCode();
-        if (getSharedPreferences("Preference", Activity.MODE_PRIVATE).getBoolean("auto_update", true)) {
+        //检查是否设置自动更新
+        SharedPreferences sp = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
+        if (sp.getBoolean("auto_update", true)) {
             checkVersion();
         } else {
             enterHome();
         }
     }
 
+    /**
+     * 获取版本代码
+     * @return
+     */
     private int getVersionCode() {
         PackageManager manager = getPackageManager();
         try {
@@ -155,7 +155,6 @@ public class SplashActivity extends AppCompatActivity {
 
     /**
      * 获取版本名称
-     *
      * @return 返回null为异常
      */
     private String getVersionName() {
@@ -183,7 +182,6 @@ public class SplashActivity extends AppCompatActivity {
                     //连接超时
                     urlConnection.setConnectTimeout(2000);
                     urlConnection.setReadTimeout(2000);
-                    Log.i(TAG, "run: " + urlConnection.getResponseCode());
                     if (urlConnection.getResponseCode() == 200) {
                         InputStream inputStream = urlConnection.getInputStream();
                         String string = StreamUtil.streamToString(inputStream);
@@ -196,7 +194,6 @@ public class SplashActivity extends AppCompatActivity {
                             //进入应用程序主界面
                             msg.what = ENTER_HOME;
                         }
-                        Log.i(TAG, "checkVersion: " + string);
                     } else {
                         msg.what = URL_ERROR;
                     }
@@ -230,14 +227,14 @@ public class SplashActivity extends AppCompatActivity {
         //设置描述内容
         builder.setMessage(bean.getDesc());
         //积极按钮,立即更新
-        builder.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.update_immediately, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //下载apk,apk链接地址,downloadUrl
                 downloadApk();
             }
         });
-        builder.setNegativeButton("稍后再说", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.later, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //取消对话框,进入主界面
@@ -257,7 +254,6 @@ public class SplashActivity extends AppCompatActivity {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             final String path = Environment.getExternalStorageDirectory().getAbsolutePath()
                     + File.separator + "moblesafe.apk";
-            progressDialog = new ProgressDialog(this);
             RequestParams requestParams = new RequestParams(bean.getDownloadUrl());
             requestParams.setSaveFilePath(path);
             x.http().get(requestParams, new Callback.ProgressCallback<File>() {
@@ -271,29 +267,24 @@ public class SplashActivity extends AppCompatActivity {
 
                 @Override
                 public void onLoading(long total, long current, boolean isDownloading) {
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    progressDialog.setMessage("亲，努力下载中。。。");
-                    progressDialog.show();
-                    progressDialog.setMax((int) total);
-                    progressDialog.setProgress((int) current);
+
                 }
 
                 @Override
                 public void onSuccess(File result) {
-                    Toast.makeText(SplashActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
+                    Toast.makeText(SplashActivity.this, R.string.download_successful, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
-                    intent.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
+                    Uri file = Uri.fromFile(new File(path));
+                    intent.setDataAndType(file, "application/vnd.android.package-archive");
                     startActivity(intent);
                 }
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                     ex.printStackTrace();
-                    Toast.makeText(SplashActivity.this, "下载失败，请检查网络和SD卡", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
+                    Toast.makeText(SplashActivity.this, R.string.check_sd_card, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -307,8 +298,16 @@ public class SplashActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(SplashActivity.this, "下载失败，请检查网络和SD卡", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SplashActivity.this, R.string.check_sd_card, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 进入主界面
+     */
+    private void enterHome() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
     private class Bean {

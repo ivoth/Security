@@ -56,14 +56,14 @@ public class SmsReceiver extends BroadcastReceiver {
                     mDPM.lockNow();
 //                    mDPM.resetPassword("", 0);
                 } else {
-                    Log.w(TAG, "onReceive: 未激活设备管理器");
+                    Log.i(TAG, "onReceive: 未激活设备管理器");
                 }
             }
             if (messageBody.contains("#*wipeData*#")) {
                 if (mDPM.isAdminActive(mDeviceAdmin)) {
                     mDPM.wipeData(0);
                 } else {
-                    Log.w(TAG, "onReceive: 未激活设备管理器");
+                    Log.i(TAG, "onReceive: 未激活设备管理器");
                 }
             }
         }

@@ -5,13 +5,13 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 
 import cn.hzu.mobile.security.R;
+import cn.hzu.mobile.security.utils.ConstantValue;
 
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        SharedPreferences sp = getSharedPreferences("session", Activity.MODE_PRIVATE);
         if (savedInstanceState == null) {
             SettingFragment settingFragment = new SettingFragment();
             getFragmentManager().beginTransaction()
@@ -23,7 +23,8 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            getPreferenceManager().setSharedPreferencesName("Preference");
+            //指定配置文件名字
+            getPreferenceManager().setSharedPreferencesName(ConstantValue.CONFIG);
             // 加载xml资源文件
             addPreferencesFromResource(R.xml.pref_general);
         }

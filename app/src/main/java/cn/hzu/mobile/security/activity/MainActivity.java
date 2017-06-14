@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +20,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.hzu.mobile.security.R;
+import cn.hzu.mobile.security.utils.ConstantValue;
 
 public class MainActivity extends AppCompatActivity {
 
     private GridView mGvHome;
     private int[] mIcons;
     private String[] mTitles;
-    private Context content;
+    private Context mContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        content = this;
+        mContent = this;
         initUI();
         initData();
     }
@@ -74,9 +75,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 显示对话框
+     */
     private void showDialog() {
-        SharedPreferences preference = getSharedPreferences("Preference", Activity.MODE_PRIVATE);
-        String pwd = preference.getString("pwd", "");
+        SharedPreferences sp = getSharedPreferences(ConstantValue.CONFIG, Activity.MODE_PRIVATE);
+        String pwd = sp.getString(ConstantValue.PWD, "");
+        //判断是否存有密码
         if (TextUtils.isEmpty(pwd)) {
             showSetPwdDialog();
         } else {
@@ -84,46 +89,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showConfirmPwdDialog(final String entrPwd) {
+    private void showConfirmPwdDialog(final String enterPwd) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View view = View.inflate(this, R.layout.dialog_set_pwd, null);
         final EditText cPwd = (EditText) view.findViewById(R.id.et_confirm_pwd);
+        //隐藏复用的布局文件
         cPwd.setVisibility(View.GONE);
-        builder.setView(view)
-                .setTitle("设置密码")
-                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+        builder.setView(view).setTitle("确认密码")
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         EditText pwd = (EditText) view.findViewById(R.id.et_set_pwd);
                         String pwdStr = pwd.getText().toString();
 
                         if (TextUtils.isEmpty(pwdStr)) {
-                            Toast.makeText(content, "请输入密码", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContent, "请输入密码", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!pwdStr.equals(entrPwd)) {
-                            Toast.makeText(content, "确认密码错误", Toast.LENGTH_SHORT).show();
+                        if (!pwdStr.equals(enterPwd)) {
+                            Toast.makeText(mContent, "确认密码错误", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         Intent intent = new Intent();
-                        intent.setClass(content, SetupOverActivity.class);
+                        intent.setClass(mContent, SetupOverActivity.class);
                         startActivity(intent);
                     }
-                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        }).show();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
+    /**
+     * 显示设置dialog
+     */
     private void showSetPwdDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View view = View.inflate(this, R.layout.dialog_set_pwd, null);
         builder.setView(view)
                 .setTitle("设置密码")
-                .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         EditText pwd = (EditText) view.findViewById(R.id.et_set_pwd);
@@ -133,21 +138,21 @@ public class MainActivity extends AppCompatActivity {
                         String cPwdStr = cPwd.getText().toString();
 
                         if (TextUtils.isEmpty(pwdStr) || TextUtils.isEmpty(cPwdStr)) {
-                            Toast.makeText(content, "请输入密码", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContent, "请输入密码", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (!pwdStr.equals(cPwdStr)) {
-                            Toast.makeText(content, "确认密码错误", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContent, "确认密码错误", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(content, "设置密码成", Toast.LENGTH_SHORT).show();
-                        SharedPreferences preference = getSharedPreferences("Preference", Activity.MODE_PRIVATE);
-                        SharedPreferences.Editor edit = preference.edit();
-                        edit.putString("pwd", pwdStr);
-                        edit.apply();
+                        Toast.makeText(mContent, "设置密码成功", Toast.LENGTH_SHORT).show();
+                        SharedPreferences preference = getSharedPreferences(ConstantValue.CONFIG, Activity.MODE_PRIVATE);
+                        preference.edit().putString(ConstantValue.PWD, pwdStr).apply();
                         showDialog();
                     }
-                }).setNegativeButton("取消", null).show();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private class MyAdapter extends BaseAdapter {

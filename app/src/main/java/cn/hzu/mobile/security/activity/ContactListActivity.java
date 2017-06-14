@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,7 +23,6 @@ import cn.hzu.mobile.security.R;
 
 public class ContactListActivity extends AppCompatActivity {
 
-    private static final String TAG = "ContactListActivity";
     private ListView mLvContact;
     private List<HashMap<String, String>> mContactList = new ArrayList<>();
 
@@ -58,7 +56,6 @@ public class ContactListActivity extends AppCompatActivity {
                         null, null, null
                 );
                 if (cursor == null) {
-                    Log.w(TAG, "run: ");
                     return;
                 }
                 int count = 10;
