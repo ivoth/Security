@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@android:drawable/star_big_on"
         android:gravity="center_vertical"
-        android:text="远程数据销毁 #*wipe data*#"
+        android:text="远程数据销毁 #*wipeData*#"
         android:textColor="#000"
         android:textSize="18sp" />
 

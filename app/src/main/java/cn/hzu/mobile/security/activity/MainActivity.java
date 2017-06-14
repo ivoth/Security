@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         showDialog();
                         break;
+                    case 7:
+                        intent.setClass(MainActivity.this, AToolActivity.class);
+                        startActivity(intent);
+                        break;
                     case 8:
                         intent.setClass(MainActivity.this, SettingsActivity.class);
                         startActivity(intent);

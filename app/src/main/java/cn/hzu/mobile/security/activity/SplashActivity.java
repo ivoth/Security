@@ -25,6 +25,7 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -90,6 +91,44 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         init();
+        initDB();
+    }
+
+    private void initDB() {
+        //1.归属地数据库拷贝
+        initAddressDB("address.db");
+    }
+
+    private void initAddressDB(String dbName) {
+        File filesDir = getFilesDir();
+        File file = new File(filesDir, dbName);
+        if (file.exists()) {
+            return;
+        }
+        InputStream inputStream = null;
+        FileOutputStream fos = null;
+        //读取资产文件
+        try {
+            inputStream = getAssets().open(dbName);
+            fos = new FileOutputStream(file);
+            byte[] bs = new byte[1024];
+            int temp = -1;
+            while ((temp = inputStream.read(bs)) != -1) {
+                fos.write(bs, 0, temp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null && fos != null) {
+                try {
+                    inputStream.close();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     private void init() {
@@ -101,7 +140,6 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             enterHome();
         }
-
     }
 
     private int getVersionCode() {

@@ -58,6 +58,8 @@ public class Setup4Activity extends BaseSetupActivity {
             @Override
             public void onClick(View view) {
                 openSecurity = mCheckBox.isChecked();
+                String text = openSecurity ? "你已开启防盗模块" : "您未开启防盗模块";
+                mCheckBox.setText(text);
                 mPreference.edit().putBoolean(ConstantValue.OPEN_SECURITY, openSecurity).apply();
             }
         });
