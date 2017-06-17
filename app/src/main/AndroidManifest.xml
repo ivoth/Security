@@ -40,20 +40,20 @@
         <activity android:name=".activity.Setup4Activity" />
         <activity android:name=".activity.ContactListActivity" />
 
-        <receiver android:name=".receive.BootReceiver">
+        <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".receive.SmsReceiver"
+            android:name=".receiver.SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".receive.DeviceAdminReceiver"
+            android:name=".receiver.DeviceAdminReceiver"
             android:description="@string/device_admin_description"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

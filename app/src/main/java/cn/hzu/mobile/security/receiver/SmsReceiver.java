@@ -1,4 +1,4 @@
-package cn.hzu.mobile.security.receive;
+package cn.hzu.mobile.security.receiver;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
@@ -31,7 +31,7 @@ public class SmsReceiver extends BroadcastReceiver {
             return;
         }
         mDeviceAdmin = new ComponentName(context, DeviceAdminReceiver.class);
-        mDPM = (DevicePolicyManager)context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mDPM = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         Object[] objects = (Object[]) intent.getExtras().get("pdus");
         //循环遍历短信
         for (Object obj : objects) {
@@ -56,6 +56,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     mDPM.lockNow();
 //                    mDPM.resetPassword("", 0);
                 } else {
+                    Toast.makeText(context,"未激活设备管理器",Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "onReceive: 未激活设备管理器");
                 }
             }
@@ -63,6 +64,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 if (mDPM.isAdminActive(mDeviceAdmin)) {
                     mDPM.wipeData(0);
                 } else {
+                    Toast.makeText(context,"未激活设备管理器",Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "onReceive: 未激活设备管理器");
                 }
             }

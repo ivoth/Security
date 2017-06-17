@@ -1,4 +1,4 @@
-package cn.hzu.mobile.security.receive;
+package cn.hzu.mobile.security.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
