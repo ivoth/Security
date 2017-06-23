@@ -5,23 +5,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
+
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
 
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.ConstantValue;
 
+@ContentView(R.layout.activity_setup4)
 public class Setup4Activity extends BaseSetupActivity {
+    @ViewInject(R.id.cb_box)
     private CheckBox mCheckBox;
     private SharedPreferences mPreference;
-    private boolean openSecurity;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup4);
+        setTitle("防盗模块");
         initUI();
     }
 
@@ -34,8 +41,8 @@ public class Setup4Activity extends BaseSetupActivity {
 
     @Override
     protected void showNextPage() {
-        if (!openSecurity) {
-            Toast.makeText(this,"请开启防盗模块",Toast.LENGTH_SHORT).show();
+        if (!mPreference.getBoolean(ConstantValue.OPEN_SECURITY, false)) {
+            Toast.makeText(this, "请开启防盗模块", Toast.LENGTH_SHORT).show();
             return;
         }
         startActivity(new Intent(this, SetupOverActivity.class));
@@ -45,25 +52,16 @@ public class Setup4Activity extends BaseSetupActivity {
     }
 
     private void initUI() {
-        mCheckBox = (CheckBox) findViewById(R.id.cb_box);
-
         mPreference = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
 
-        openSecurity = mPreference.getBoolean(ConstantValue.OPEN_SECURITY, false);
+        boolean openSecurity = mPreference.getBoolean(ConstantValue.OPEN_SECURITY, false);
+        mCheckBox.setChecked(true);
         mCheckBox.setChecked(openSecurity);
-        setText();
-
-        mCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openSecurity = mCheckBox.isChecked();
-                setText();
-                mPreference.edit().putBoolean(ConstantValue.OPEN_SECURITY, openSecurity).apply();
-            }
-        });
     }
-    private void setText() {
-        String text = openSecurity ? "你已开启防盗模块" : "您未开启防盗模块";
-        mCheckBox.setText(text);
+
+    @Event(value = R.id.cb_box, type = CompoundButton.OnCheckedChangeListener.class)
+    private void checkBoxOnCheckedChange(CompoundButton compoundButton, boolean b) {
+        compoundButton.setText(b ? "你已开启防盗模块" : "你未开启防盗模块");
+        mPreference.edit().putBoolean(ConstantValue.OPEN_SECURITY, b).apply();
     }
 }

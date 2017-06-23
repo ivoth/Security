@@ -27,7 +27,6 @@
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -39,6 +38,8 @@
         <activity android:name=".activity.Setup3Activity" />
         <activity android:name=".activity.Setup4Activity" />
         <activity android:name=".activity.ContactListActivity" />
+        <activity android:name=".activity.AToolActivity" />
+        <activity android:name=".activity.QueryAddressActivity" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -67,9 +68,6 @@
         </receiver>
 
         <service android:name=".service.LocationService" />
-
-        <activity android:name=".activity.AToolActivity" />
-        <activity android:name=".activity.QueryAddressActivity" />
     </application>
 
 </manifest>

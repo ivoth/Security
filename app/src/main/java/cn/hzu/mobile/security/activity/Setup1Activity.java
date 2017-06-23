@@ -7,14 +7,16 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import cn.hzu.mobile.security.R;
+import org.xutils.view.annotation.ContentView;
+import org.xutils.x;
 
+import cn.hzu.mobile.security.R;
+@ContentView(R.layout.activity_setup1)
 public class Setup1Activity extends BaseSetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup1);
         setTitle("欢迎使用手机防盗");
     }
 

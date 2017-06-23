@@ -1,6 +1,5 @@
 package cn.hzu.mobile.security.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,19 +20,17 @@ import com.google.gson.Gson;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
+import org.xutils.view.annotation.ContentView;
 import org.xutils.x;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.ConstantValue;
-import cn.hzu.mobile.security.utils.StreamUtil;
-
+@ContentView(R.layout.activity_splash)
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     /**
@@ -79,7 +75,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        x.view().inject(this);
         init();
         initDB();
     }
@@ -91,6 +87,7 @@ public class SplashActivity extends AppCompatActivity {
 
     /**
      * 从assets拷贝文件到用户目录
+     *
      * @param dbName
      */
     private void initAddressDB(String dbName) {
@@ -134,12 +131,24 @@ public class SplashActivity extends AppCompatActivity {
         if (sp.getBoolean("auto_update", true)) {
             checkVersion();
         } else {
-            enterHome();
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        enterHome();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
     /**
      * 获取版本代码
+     *
      * @return
      */
     private int getVersionCode() {
@@ -155,6 +164,7 @@ public class SplashActivity extends AppCompatActivity {
 
     /**
      * 获取版本名称
+     *
      * @return 返回null为异常
      */
     private String getVersionName() {
@@ -172,45 +182,47 @@ public class SplashActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Message msg = new Message();
                 long startTime = System.currentTimeMillis();
-                try {
-                    //设置url
-                    URL url = new URL("http://192.168.172.99:8080/update.json");
-                    //开启链接
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    //连接超时
-                    urlConnection.setConnectTimeout(2000);
-                    urlConnection.setReadTimeout(2000);
-                    if (urlConnection.getResponseCode() == 200) {
-                        InputStream inputStream = urlConnection.getInputStream();
-                        String string = StreamUtil.streamToString(inputStream);
+                String uri = "https://raw.githubusercontent.com/ivoth/Security/master/other/update.json";
+                RequestParams params = new RequestParams(uri);
+                params.setConnectTimeout(2000);
+                params.setReadTimeout(2000);
+                x.http().get(params, new Callback.CommonCallback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        Log.i(TAG, "onSuccess: " + result);
                         Gson gson = new Gson();
-                        bean = gson.fromJson(string, Bean.class);
+                        bean = gson.fromJson(result, Bean.class);
                         if (mLocalVersionCode < bean.getVersionCode()) {
                             //提示用户更新,弹出对话框(UI),消息机制
-                            msg.what = UPDATE_VERSION;
+                            mHandler.sendEmptyMessage(UPDATE_VERSION);
                         } else {
                             //进入应用程序主界面
-                            msg.what = ENTER_HOME;
+                            mHandler.sendEmptyMessage(ENTER_HOME);
                         }
-                    } else {
-                        msg.what = URL_ERROR;
                     }
-                } catch (IOException e) {
-                    msg.what = IO_ERROR;
-                    e.printStackTrace();
-                } finally {
-                    long endTime = System.currentTimeMillis();
-                    if (endTime - startTime < 4000) {
-                        try {
-                            Thread.sleep(4000 - (endTime - startTime));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                        mHandler.sendEmptyMessage(URL_ERROR);
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+                    }
+
+                    @Override
+                    public void onFinished() {
+                    }
+                });
+                long endTime = System.currentTimeMillis();
+                if (endTime - startTime < 4000) {
+                    try {
+                        Thread.sleep(4000 - (endTime - startTime));
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                mHandler.sendMessage(msg);
             }
         }).start();
     }
@@ -263,6 +275,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 @Override
                 public void onStarted() {
+                    Toast.makeText(SplashActivity.this, "开始下载...", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -278,7 +291,8 @@ public class SplashActivity extends AppCompatActivity {
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     Uri file = Uri.fromFile(new File(path));
                     intent.setDataAndType(file, "application/vnd.android.package-archive");
-                    startActivity(intent);
+                    startActivityForResult(intent,0);
+//                    enterHome();
                 }
 
                 @Override
@@ -300,6 +314,12 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             Toast.makeText(SplashActivity.this, R.string.check_sd_card, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        enterHome();
     }
 
     /**

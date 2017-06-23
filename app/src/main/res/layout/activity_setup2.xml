@@ -29,6 +29,7 @@
             android:gravity="center_vertical"
             android:paddingLeft="6dip"
             android:paddingRight="6dip"
+            android:checked="false"
             android:text="点击绑定sim卡\n绑定sim卡未绑定"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="16sp" />

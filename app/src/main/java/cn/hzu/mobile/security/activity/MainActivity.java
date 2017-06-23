@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +19,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
+
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.ConstantValue;
 
-public class MainActivity extends AppCompatActivity {
-
+@ContentView(R.layout.activity_main)
+public class MainActivity extends BaseAppCompatActivity {
+    @ViewInject(R.id.gv_home)
     private GridView mGvHome;
     private int[] mIcons;
     private String[] mTitles;
@@ -32,14 +38,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setTitle("功能列表");
         mContent = this;
-        initUI();
         initData();
-    }
-
-    private void initUI() {
-        mGvHome = (GridView) findViewById(R.id.gv_home);
     }
 
     private void initData() {
@@ -52,27 +53,26 @@ public class MainActivity extends AppCompatActivity {
                 "流量统计", "手机杀毒", "缓存清理", "高级工具", "设置中心"};
         mGvHome.setAdapter(new MyAdapter());
 
-        mGvHome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent();
-                switch (i) {
-                    case 0:
-                        showDialog();
-                        break;
-                    case 7:
-                        intent.setClass(MainActivity.this, AToolActivity.class);
-                        startActivity(intent);
-                        break;
-                    case 8:
-                        intent.setClass(MainActivity.this, SettingsActivity.class);
-                        startActivity(intent);
-                        break;
-                    default:
-                        Toast.makeText(MainActivity.this, "未实现的功能", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    }
+
+    @Event(value = R.id.gv_home, type = AdapterView.OnItemClickListener.class)
+    private void onGvHomeItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Intent intent = new Intent();
+        switch (i) {
+            case 0:
+                showDialog();
+                break;
+            case 7:
+                intent.setClass(MainActivity.this, AToolActivity.class);
+                startActivity(intent);
+                break;
+            case 8:
+                intent.setClass(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                Toast.makeText(MainActivity.this, "未实现的功能", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

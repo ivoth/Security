@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +14,19 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.view.annotation.ViewInject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import cn.hzu.mobile.security.R;
 
-public class ContactListActivity extends AppCompatActivity {
-
+@ContentView(R.layout.activity_contact_list)
+public class ContactListActivity extends BaseAppCompatActivity {
+    @ViewInject(R.id.lv_contact)
     private ListView mLvContact;
     private List<HashMap<String, String>> mContactList = new ArrayList<>();
 
@@ -37,9 +41,7 @@ public class ContactListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact_list);
         setTitle("选择联系人");
-        initUI();
         initData();
     }
 
@@ -93,21 +95,16 @@ public class ContactListActivity extends AppCompatActivity {
         }.start();
     }
 
-    private void initUI() {
-        mLvContact = (ListView) findViewById(R.id.lv_contact);
-        mLvContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (myAdapter != null) {
-                    HashMap<String, String> hashMap = myAdapter.getItem(i);
-                    String phone = hashMap.get("phone");
-                    Intent intent = new Intent();
-                    intent.putExtra("phone", phone);
-                    setResult(0, intent);
-                    finish();
-                }
-            }
-        });
+    @Event(value = R.id.lv_contact,type = AdapterView.OnItemClickListener.class)
+    private void onLvContactItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (myAdapter != null) {
+            HashMap<String, String> hashMap = myAdapter.getItem(i);
+            String phone = hashMap.get("phone");
+            Intent intent = new Intent();
+            intent.putExtra("phone", phone);
+            setResult(0, intent);
+            finish();
+        }
     }
 
     private class MyAdapter extends BaseAdapter {

@@ -6,26 +6,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.x;
+
 import cn.hzu.mobile.security.R;
-
-public class AToolActivity extends AppCompatActivity {
-
-    private TextView mQueryPhoneAddress;
+@ContentView(R.layout.activity_atool)
+public class AToolActivity extends BaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_atool);
-        initUI();
+        setTitle("高级工具");
+//        x.view().inject(this);
     }
 
-    private void initUI() {
-        mQueryPhoneAddress = (TextView) findViewById(R.id.tv_query_phone_address);
-        mQueryPhoneAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(AToolActivity.this,QueryAddressActivity.class));
-            }
-        });
+    @Event(R.id.tv_query_phone_address)
+    private void onmQueryPhoneAddressClick(View view) {
+        startActivity(new Intent(this,QueryAddressActivity.class));
     }
 }

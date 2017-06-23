@@ -9,13 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
+
 import cn.hzu.mobile.security.R;
 import cn.hzu.mobile.security.utils.ConstantValue;
 
-public class SetupOverActivity extends AppCompatActivity {
-
+@ContentView(R.layout.activity_setup_over)
+public class SetupOverActivity extends BaseAppCompatActivity {
+    @ViewInject(R.id.tv_phone)
     private TextView mTvPhone;
-    private TextView mTvResetSetup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,24 +33,20 @@ public class SetupOverActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        setContentView(R.layout.activity_setup_over);
+        setTitle("手机防盗");
         initUI();
     }
 
     private void initUI() {
-        mTvPhone = (TextView) findViewById(R.id.tv_phone);
         SharedPreferences pf = getSharedPreferences(ConstantValue.CONFIG, Context.MODE_PRIVATE);
         String phone = pf.getString(ConstantValue.CONTACT_PHONE, "");
         mTvPhone.setText(phone);
+    }
 
-        mTvResetSetup = (TextView) findViewById(R.id.tv_reset_setup);
-        mTvResetSetup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SetupOverActivity.this, Setup1Activity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+    @Event(R.id.tv_reset_setup)
+    private void onTvResetSetupClick(View view) {
+        Intent intent = new Intent(SetupOverActivity.this, Setup1Activity.class);
+        startActivity(intent);
+        finish();
     }
 }
